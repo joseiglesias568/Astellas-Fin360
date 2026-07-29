@@ -58,13 +58,13 @@ export default function HomeClient({ kpiConfig, financials }: HomeClientProps) {
 
     return (
         <div className="flex-1 bg-gray-50/50">
-            {/* Dark Green Hero Banner */}
-            <div className="relative overflow-hidden px-8" style={{ background: 'linear-gradient(135deg, #000000 0%, #003322 30%, #000000 70%, #000000 100%)' }}>
+            {/* Astellas Red Hero Banner */}
+            <div className="relative overflow-hidden px-8" style={{ background: 'linear-gradient(135deg, #1A1A2E 0%, #A62B4E 35%, #D91E49 65%, #A62B4E 100%)' }}>
                 {/* Subtle texture overlay */}
                 <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.03\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
                 {/* Soft radial glow */}
-                <div className="absolute top-0 right-0 w-[50%] h-[120%] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(212,233,226,0.06) 0%, transparent 60%)' }} />
-                <div className="absolute bottom-0 left-0 w-[40%] h-[100%] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 80%, rgba(0,92,62,0.15) 0%, transparent 60%)' }} />
+                <div className="absolute top-0 right-0 w-[50%] h-[120%] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(250,232,238,0.08) 0%, transparent 60%)' }} />
+                <div className="absolute bottom-0 left-0 w-[40%] h-[100%] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 80%, rgba(166,43,78,0.25) 0%, transparent 60%)' }} />
                 <div className="max-w-7xl mx-auto pt-20 pb-16">
                     {/* Centered Search Bar + Overlay Chips */}
                     <div className="relative mb-24">
