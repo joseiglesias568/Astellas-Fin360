@@ -133,8 +133,8 @@ export default function ManagementReportingLayout({
                                 unoptimized
                             />
                             <div className="flex flex-col">
-                                <h1 className="text-sm font-semibold text-[#D91E49] tracking-wide leading-tight">
-                                    Finance360
+                                <h1 className="text-sm font-semibold text-[#1A1A2E] tracking-wide leading-tight">
+                                    Astellas <span className="text-[#D91E49]">Finance360</span>
                                 </h1>
                                 <p className="text-[10px] text-gray-400 font-medium leading-tight tracking-wider uppercase hidden sm:block">
                                     AI-Powered Financial Intelligence
