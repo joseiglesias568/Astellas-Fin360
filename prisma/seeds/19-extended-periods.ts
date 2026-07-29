@@ -789,29 +789,33 @@ export async function seedExtendedPeriods(
     kpiDefMap[kpi.label] = kpi.id;
   }
 
-  // ── 1. Create FiscalPeriod records ─────────────────────────────────────────
+  // ── 1. Upsert FiscalPeriod records (may already exist from main seed) ────────
   const periodMap: Record<string, { id: number }> = {};
 
   for (const period of newPeriods) {
-    const created = await prisma.fiscalPeriod.create({
-      data: {
+    const created = await prisma.fiscalPeriod.upsert({
+      where: { companyId_label: { companyId, label: period.label } },
+      create: {
         companyId,
         label: period.label,
         year: period.year,
         quarter: period.quarter,
         type: period.type,
       },
+      update: {},
     });
     periodMap[period.label] = { id: created.id };
   }
 
   console.log(`Seeded ${newPeriods.length} extended fiscal periods (Q1-Q4 FY24, FY24, Q2-Q3 FY25)`);
 
-  // ── 2. Create QuarterlyResult records ──────────────────────────────────────
+  // ── 2. Upsert QuarterlyResult records (periodId unique — may already exist) ──
   for (const qr of quarterlyResults) {
-    await prisma.quarterlyResult.create({
-      data: {
-        periodId: periodMap[qr.period].id,
+    const pid = periodMap[qr.period].id;
+    await prisma.quarterlyResult.upsert({
+      where: { periodId: pid },
+      create: {
+        periodId: pid,
         revenue: qr.revenue,
         revenueYoY: qr.revenueYoY,
         operatingIncome: qr.operatingIncome,
@@ -820,6 +824,7 @@ export async function seedExtendedPeriods(
         compStoreSales: qr.compStoreSales,
         netNewStores: qr.netNewStores,
       },
+      update: {},
     });
   }
 
@@ -841,6 +846,7 @@ export async function seedExtendedPeriods(
         variance: l.variance,
         variancePercent: l.variancePercent,
       })),
+      skipDuplicates: true,
     });
     financialStatementCount += q.lines.length;
   }
@@ -900,7 +906,7 @@ export async function seedExtendedPeriods(
     }
 
     if (segResults.length > 0) {
-      await prisma.segmentResult.createMany({ data: segResults });
+      await prisma.segmentResult.createMany({ data: segResults, skipDuplicates: true });
       segmentResultCount += segResults.length;
     }
   }
@@ -944,8 +950,9 @@ export async function seedExtendedPeriods(
       // Actual (all periods have actuals for Astellas)
       const actualEntry = kpiData.actuals[qi];
       if (actualEntry !== null) {
-        await prisma.kPIValue.create({
-          data: {
+        await prisma.kPIValue.upsert({
+          where: { kpiDefinitionId_periodId_dataType: { kpiDefinitionId: definitionId, periodId, dataType: 'actual' } },
+          create: {
             kpiDefinitionId: definitionId,
             periodId,
             dataType: 'actual',
@@ -955,14 +962,16 @@ export async function seedExtendedPeriods(
             trendValue: actualEntry.trendValue,
             status: actualEntry.status,
           },
+          update: {},
         });
         kpiValueCount++;
       }
 
       // Forecast (all periods)
       const forecastEntry = kpiData.forecasts[qi];
-      await prisma.kPIValue.create({
-        data: {
+      await prisma.kPIValue.upsert({
+        where: { kpiDefinitionId_periodId_dataType: { kpiDefinitionId: definitionId, periodId, dataType: 'forecast' } },
+        create: {
           kpiDefinitionId: definitionId,
           periodId,
           dataType: 'forecast',
@@ -972,13 +981,15 @@ export async function seedExtendedPeriods(
           trendValue: forecastEntry.trendValue,
           status: forecastEntry.status,
         },
+        update: {},
       });
       kpiValueCount++;
 
       // Budget (all periods)
       const budgetEntry = kpiData.budgets[qi];
-      await prisma.kPIValue.create({
-        data: {
+      await prisma.kPIValue.upsert({
+        where: { kpiDefinitionId_periodId_dataType: { kpiDefinitionId: definitionId, periodId, dataType: 'budget' } },
+        create: {
           kpiDefinitionId: definitionId,
           periodId,
           dataType: 'budget',
@@ -988,6 +999,7 @@ export async function seedExtendedPeriods(
           trendValue: budgetEntry.trendValue,
           status: budgetEntry.status,
         },
+        update: {},
       });
       kpiValueCount++;
     }
