@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Astellas Pharma Finance360 logo — standard variant for light backgrounds -->
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 120" xml:space="preserve">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 120">
   <title>Astellas Finance360</title>
-  <!-- Astellas flying-star icon mark (8-pointed star / asterisk geometric) -->
-  <!-- Horizontal bar -->
-  <rect x="4" y="52" width="90" height="16" rx="8" fill="#D91E49"/>
-  <!-- Vertical bar -->
-  <rect x="43" y="12" width="16" height="96" rx="8" fill="#D91E49"/>
-  <!-- Diagonal bar NW-SE -->
-  <rect x="16" y="21" width="70" height="16" rx="8" fill="#D91E49" transform="rotate(45 51 29)"/>
-  <!-- Diagonal bar NE-SW -->
-  <rect x="16" y="83" width="70" height="16" rx="8" fill="#D91E49" transform="rotate(-45 51 91)"/>
-  <!-- Astellas wordmark -->
+  <g transform="translate(51,60)" fill="#D91E49">
+    <ellipse rx="44" ry="3"/>
+    <ellipse rx="44" ry="3" transform="rotate(45)"/>
+    <ellipse rx="44" ry="3" transform="rotate(90)"/>
+    <ellipse rx="44" ry="3" transform="rotate(135)"/>
+  </g>
   <text x="110" y="78" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="700" fill="#1A1A2E" letter-spacing="-1">Astellas</text>
-  <!-- Finance360 sub-label -->
   <text x="112" y="102" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="400" fill="#5F6B7A" letter-spacing="2">Finance360</text>
 </svg>
