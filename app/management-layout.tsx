@@ -126,11 +126,10 @@ export default function ManagementReportingLayout({
                             <Image
                                 src="/Picture1logo.png"
                                 alt="Astellas"
-                                width={42}
-                                height={32}
+                                width={245}
+                                height={206}
                                 className="h-8 w-auto max-h-8 object-contain flex-shrink-0"
                                 priority
-                                unoptimized
                             />
                             <div className="flex flex-col">
                                 <h1 className="text-sm font-semibold text-[#1A1A2E] tracking-wide leading-tight">

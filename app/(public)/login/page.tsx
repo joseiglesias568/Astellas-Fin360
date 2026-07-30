@@ -54,14 +54,15 @@ export default function LoginPage() {
             <div className="w-full max-w-md space-y-6 relative z-10">
                 {/* Logo */}
                 <div className="flex justify-center mb-4">
-                    <div className="relative w-40 h-28">
+                    <div className="flex items-center justify-center">
                         <Image
                             src="/Picture1logo.png"
                             alt={branding.logoAlt}
-                            fill
+                            width={245}
+                            height={206}
                             className="object-contain drop-shadow-2xl"
+                            style={{ width: '130px', height: 'auto' }}
                             priority
-                            unoptimized
                         />
                     </div>
                 </div>
