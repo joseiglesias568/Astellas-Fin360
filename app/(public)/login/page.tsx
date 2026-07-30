@@ -56,7 +56,7 @@ export default function LoginPage() {
                 <div className="flex justify-center mb-4">
                     <div className="relative w-40 h-28">
                         <Image
-                            src="/download.png"
+                            src="/logo-astellas.svg"
                             alt={branding.logoAlt}
                             fill
                             className="object-contain drop-shadow-2xl"

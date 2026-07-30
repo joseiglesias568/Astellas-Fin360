@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 145">
+  <title>Astellas</title>
+  <!-- Gray arrow (behind) -->
+  <path d="M 68,18 C 100,8 150,36 162,72
+           C 152,105 120,130 80,126
+           C 93,106 104,82 100,62
+           C 94,42 78,28 68,18 Z"
+        fill="#A7A9AC"/>
+  <!-- Red arrow (front) -->
+  <path d="M 8,80 C 32,32 82,6 128,14
+           C 148,36 140,64 122,78
+           C 104,92 78,104 58,116
+           C 38,108 16,88 12,76
+           C 10,82 8,82 8,80 Z"
+        fill="#D91E49"/>
+</svg>
