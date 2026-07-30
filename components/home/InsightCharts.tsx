@@ -651,26 +651,71 @@ function EPSChart({ data, breakdowns }: { data: InsightChartDataPoint[]; breakdo
     );
 }
 
+// ── Astellas unified bar chart — all IDs except 1 (horizontal) ─────────────────
+
+type ChartCfg = { title: string; yFmt: (v: number) => string; domain: [number, number]; barColor: string; refLine?: number };
+
+const ASTELLAS_CHART_CFG: Record<number, ChartCfg> = {
+    2:  { title: 'Core OP Margin (%)',               yFmt: v => `${v.toFixed(1)}%`,  domain: [20, 32],   barColor: '#D91E49', refLine: 26.0 },
+    3:  { title: 'Revenue by Quarter (¥B)',           yFmt: v => `¥${v}B`,            domain: [450, 620], barColor: '#D91E49' },
+    4:  { title: 'Core EPS vs Guidance (¥)',          yFmt: v => `¥${v.toFixed(1)}`,  domain: [45, 75],   barColor: '#D91E49' },
+    5:  { title: 'XTANDI Revenue (¥B)',               yFmt: v => `¥${v}B`,            domain: [190, 280], barColor: '#D91E49' },
+    6:  { title: 'Strategic Brands Revenue (¥B)',     yFmt: v => `¥${v}B`,            domain: [60, 180],  barColor: '#D91E49' },
+    7:  { title: 'IRA Price Risk — Core OP Impact (¥B)', yFmt: v => `¥${v}B`,         domain: [-105, 5],  barColor: '#EF4444', refLine: 0 },
+    8:  { title: 'USD/JPY Rate vs Baseline',          yFmt: v => `¥${v}`,             domain: [138, 158], barColor: '#F59E0B', refLine: 151 },
+    9:  { title: 'VEOZAH Net Sales (¥B)',             yFmt: v => `¥${v.toFixed(1)}B`, domain: [10, 80],   barColor: '#D91E49' },
+    10: { title: 'IZERVAY Sales (¥B)',                yFmt: v => `¥${v.toFixed(1)}B`, domain: [10, 120],  barColor: '#D91E49' },
+    11: { title: 'VYLOY Net Sales (¥B)',              yFmt: v => `¥${v.toFixed(1)}B`, domain: [0, 130],   barColor: '#D91E49' },
+    12: { title: 'Established Markets Revenue (¥B)',  yFmt: v => `¥${v}B`,            domain: [60, 100],  barColor: '#3B82F6' },
+    13: { title: 'Total Revenue vs Guidance (¥B)',    yFmt: v => `¥${v}B`,            domain: [450, 620], barColor: '#D91E49' },
+    14: { title: 'R&D Intensity (% of Revenue)',      yFmt: v => `${v.toFixed(1)}%`,  domain: [17, 24],   barColor: '#3B82F6' },
+    15: { title: 'Core EPS Trajectory (¥)',           yFmt: v => `¥${v.toFixed(1)}`,  domain: [45, 75],   barColor: '#D91E49' },
+};
+
+function AstellasBarChart({ insightId, data, breakdowns }: { insightId: number; data: any[]; breakdowns?: Record<string, string> }) {
+    const cfg: ChartCfg = ASTELLAS_CHART_CFG[insightId] ?? ASTELLAS_CHART_CFG[3];
+    return (
+        <div className="space-y-1">
+            <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">{cfg.title}</span>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm" style={{ background: cfg.barColor }} /><span className="text-[9px] text-gray-400">Actual</span></div>
+                    <div className="flex items-center gap-1"><div className="w-2 h-0.5 bg-gray-300 rounded" /><span className="text-[9px] text-gray-400">Target</span></div>
+                </div>
+            </div>
+            <ResponsiveContainer width="100%" height={140}>
+                <ComposedChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+                    <CartesianGrid vertical={false} stroke="#F3F4F6" />
+                    <XAxis dataKey="q" tick={axisStyle} axisLine={false} tickLine={false} />
+                    <YAxis tick={axisStyle} axisLine={false} tickLine={false} tickFormatter={cfg.yFmt} domain={cfg.domain} />
+                    <Tooltip {...tooltipStyle} formatter={(value: number, name: string) => [cfg.yFmt(value), name === 'comp' ? 'Actual' : 'Target']} />
+                    {cfg.refLine !== undefined && <ReferenceLine y={cfg.refLine} stroke="#D1D5DB" strokeWidth={1.5} strokeDasharray="4 3" />}
+                    <Bar dataKey="comp" radius={[3, 3, 0, 0]} barSize={22} fill={cfg.barColor} />
+                    <Line type="monotone" dataKey="target" stroke={COLORS.grayLight} strokeWidth={1.5} strokeDasharray="4 3" dot={false} />
+                </ComposedChart>
+            </ResponsiveContainer>
+            {breakdowns && (
+                <div className="grid grid-cols-2 gap-2 pt-1 border-t border-gray-100">
+                    <div className="text-center">
+                        <p className="text-[9px] text-gray-400">Current</p>
+                        <p className="text-xs font-bold text-emerald-600">{breakdowns.ticket}</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-[9px] text-gray-400">FY2026 Guidance</p>
+                        <p className="text-xs font-bold text-gray-700">{breakdowns.revenue}</p>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ── Export: map insight id -> chart ─────────────────────────────────────────────
 
 export function InsightChart({ insightId, chartData }: { insightId: number; chartData?: InsightChartData }) {
     if (!chartData) {
         return <div className="text-xs text-gray-400 text-center py-8">No chart data available</div>;
     }
-
-    switch (insightId) {
-        case 1: return <MarketShareChart data={chartData.data} trendData={chartData.trendData} />;
-        case 2: return <TransactionVolumeChart data={chartData.data} breakdowns={chartData.breakdowns} />;
-        case 3: return <RevenueChart data={chartData.data} growth={chartData.growth} />;
-        case 4: return <PortfolioRetentionChart data={chartData.data} stats={chartData.stats} />;
-        case 5: return <OccupancyChart data={chartData.data} stats={chartData.stats} />;
-        case 6: return <RegionalChart data={chartData.data} stats={chartData.stats} />;
-        case 7: return <MarginChart waterfallSteps={chartData.waterfallSteps || []} stats={chartData.stats} />;
-        case 8: return <ServiceMixChart data={chartData.data} stats={chartData.stats} />;
-        case 10: return <DigitalProgressChart data={chartData.data} breakdowns={chartData.breakdowns} />;
-        case 12: return <InterestRateChart data={chartData.data} stats={chartData.stats} />;
-        case 14: return <ServiceLineChart data={chartData.data} growth={chartData.growth} />;
-        case 15: return <EPSChart data={chartData.data} breakdowns={chartData.breakdowns} />;
-        default: return <TransactionVolumeChart data={chartData.data} breakdowns={chartData.breakdowns} />;
-    }
+    if (insightId === 1) return <MarketShareChart data={chartData.data} trendData={chartData.trendData} />;
+    return <AstellasBarChart insightId={insightId} data={chartData.data} breakdowns={chartData.breakdowns} />;
 }

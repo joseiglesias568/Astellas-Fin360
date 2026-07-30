@@ -64,7 +64,7 @@ export default function InsightDetailModal({ insight, tile, onClose, onViewConso
                 >
                     {/* Dark Header - compact */}
                     <div className="bg-[#000000] px-5 py-3 flex items-center justify-between flex-shrink-0">
-                        <h2 className="text-base font-bold text-white">{insight.title}</h2>
+                        <h2 className="text-base font-bold text-white">{tile?.categoryLabel || insight.title}</h2>
                         <div className="flex items-center space-x-4">
                             {insight.dataSource && (
                                 <span className="text-[11px] text-white/50">

@@ -135,5 +135,110 @@ export const insightCharts: InsightChartsConfig = {
         margin: 'Growing share of total portfolio; key offset to XTANDI IRA risk',
       },
     },
+
+    // 7. IRA XTANDI MFP Risk — Quarterly Revenue Headwind
+    {
+      id: 7,
+      title: 'IRA XTANDI MFP — Estimated Revenue Headwind',
+      subtitle: '¥B — Quarterly revenue impact vs. pre-IRA baseline',
+      chartType: 'composedBar',
+      data: [
+        { q: 'Q1 FY2026', comp: -19.5, target: 0 }, // [ASSUMED] IRA price effective Jan 2026
+        { q: 'Q2 FY2026', comp: -23.0, target: 0 }, // [ASSUMED]
+        { q: 'Q3 FY2026', comp: -24.5, target: 0 }, // [ASSUMED]
+        { q: 'Q4 FY2026', comp: -24.0, target: 0 }, // [ASSUMED]
+        { q: 'Q1 FY2027', comp: -26.0, target: 0 }, // [ASSUMED] full year effect
+      ],
+      breakdowns: {
+        ticket: '-¥91B estimated FY2026 XTANDI headwind',
+        revenue: 'IRA Minimum Fair Price effective Jan 1, 2026',
+        traffic: '~9.5% ASP reduction on US XTANDI revenue',
+        margin: 'PADCEV/VEOZAH growth partially offsets; Core EPS guidance absorbs ~¥30/share',
+      },
+    },
+
+    // 8. FX Sensitivity — USD/JPY Rate vs Planning Rate
+    {
+      id: 8,
+      title: 'USD/JPY Exchange Rate vs Planning Baseline',
+      subtitle: '¥ per $1 USD — actual vs. ¥151 planning assumption',
+      chartType: 'composedBar',
+      data: [
+        { q: "Q1'FY25", comp: 148.5, target: 151 }, // [INTERPOLATED]
+        { q: "Q2'FY25", comp: 152.3, target: 151 }, // [INTERPOLATED]
+        { q: "Q3'FY25", comp: 153.8, target: 151 }, // [INTERPOLATED]
+        { q: "Q4'FY25", comp: 150.1, target: 151 }, // [INTERPOLATED]
+        { q: "Q1'FY26", comp: 149.4, target: 151 }, // [ASSUMED]
+      ],
+      breakdowns: {
+        ticket: '¥151/USD FY2026 planning rate',
+        revenue: '¥2.1B Core OP impact per ¥1 USD/JPY move',
+        traffic: '¥3.0B Revenue sensitivity per ¥1 move',
+        margin: 'Current rate below planning assumption — slight Core OP headwind',
+      },
+    },
+
+    // 9. VEOZAH US Net Sales — Launch Ramp
+    {
+      id: 9,
+      title: 'VEOZAH Net Sales Ramp',
+      subtitle: '¥B — US Launch Trajectory (VMS Indication)',
+      chartType: 'composedBar',
+      data: [
+        { q: 'Q1 FY2025', comp: 10.2, target: 8.0 },  // [INTERPOLATED]
+        { q: 'Q2 FY2025', comp: 11.5, target: 11.0 }, // [INTERPOLATED]
+        { q: 'Q3 FY2025', comp: 12.8, target: 13.0 }, // [INTERPOLATED]
+        { q: 'Q4 FY2025', comp: 12.1, target: 13.5 }, // [INTERPOLATED]
+        { q: 'Q1 FY2026', comp: 14.2, target: 15.0 }, // [ASSUMED]
+      ],
+      breakdowns: {
+        ticket: '¥46.6B FY2025 VEOZAH Revenue',
+        revenue: 'FY2026 target: ¥70B+ (ramping US uptake)',
+        traffic: '+52% YoY FY2025 growth',
+        margin: 'Women\'s health indication; non-hormonal VMS treatment gaining market share',
+      },
+    },
+
+    // 11. VYLOY Japan NHI Sales — Gastric Cancer Pipeline
+    {
+      id: 11,
+      title: 'VYLOY Net Sales Growth',
+      subtitle: '¥B — Japan NHI Listed; Expanding Gastric Cancer Indications',
+      chartType: 'composedBar',
+      data: [
+        { q: 'Q1 FY2025', comp: 8.5,  target: 6.0 },  // [INTERPOLATED] — NHI listing early FY2025
+        { q: 'Q2 FY2025', comp: 14.0, target: 12.0 }, // [INTERPOLATED]
+        { q: 'Q3 FY2025', comp: 18.2, target: 17.0 }, // [INTERPOLATED]
+        { q: 'Q4 FY2025', comp: 22.4, target: 20.0 }, // [INTERPOLATED]
+        { q: 'Q1 FY2026', comp: 25.0, target: 27.0 }, // [ASSUMED]
+      ],
+      breakdowns: {
+        ticket: '¥63.1B FY2025 VYLOY Revenue',
+        revenue: 'FY2026 target: ¥100B+ (global rollout + label expansion)',
+        traffic: '+113% YoY FY2025 — fastest growing pipeline asset',
+        margin: 'Claudin 18.2 ADC; strong Phase 3 gastric/GEJ data supporting global NHI listings',
+      },
+    },
+
+    // 13. Total Revenue — Quarterly vs Annual Guidance
+    {
+      id: 13,
+      title: 'Total Revenue vs Guidance',
+      subtitle: '¥B — Consolidated Quarterly Revenue | FY2026 Guidance: ¥2,220B',
+      chartType: 'composedBar',
+      data: [
+        { q: 'Q1 FY2025', comp: 505.0, target: 495.0 }, // [INTERPOLATED]
+        { q: 'Q2 FY2025', comp: 519.0, target: 510.0 }, // [INTERPOLATED]
+        { q: 'Q3 FY2025', comp: 545.0, target: 535.0 }, // [INTERPOLATED]
+        { q: 'Q4 FY2025', comp: 568.2, target: 558.0 }, // [CITED:AR-FY25] ~¥2,137.2B full-year
+        { q: 'Q1 FY2026', comp: 542.0, target: 555.0 }, // [ASSUMED]
+      ],
+      breakdowns: {
+        ticket: '¥2,139.2B FY2025 Total Revenue',
+        revenue: 'FY2026 guidance: ¥2,220B (+3.8% YoY)',
+        traffic: '+5.2% YoY FY2025 growth',
+        margin: 'XTANDI + Strategic Brands growth offset by FX and IRA pricing headwinds',
+      },
+    },
   ],
 };
