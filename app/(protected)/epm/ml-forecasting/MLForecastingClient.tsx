@@ -63,7 +63,7 @@ export default function MLForecastingClient({ data }: MLForecastingClientProps) 
           <h1 className="text-xl font-bold text-gray-900">18-Month Rolling Forecast</h1>
           <p className="text-xs text-gray-500 mt-0.5">
             Full P&L cascade with ML-predicted drivers &bull;{' '}
-            {viewMode === 'monthly' ? "Apr '25 – Sep '26 (18 months)" : viewMode === 'quarterly' ? 'Q1 FY25 – Q4 FY27' : 'FY25 – FY27 Annual'}
+            {viewMode === 'monthly' ? "Apr '26 – Mar '27 (FY26 — 12 months)" : viewMode === 'quarterly' ? 'Q1 FY25 – Q4 FY27' : 'FY25 – FY27 Annual'}
           </p>
         </div>
         <div className="flex items-center gap-2">
