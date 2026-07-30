@@ -124,7 +124,7 @@ export default function ManagementReportingLayout({
                     <div className="flex items-center space-x-3 flex-shrink-0">
                         <Link href="/" className="flex items-center space-x-3">
                             <Image
-                                src="/logo-icon.svg"
+                                src="/download.png"
                                 alt="Astellas"
                                 width={42}
                                 height={32}
