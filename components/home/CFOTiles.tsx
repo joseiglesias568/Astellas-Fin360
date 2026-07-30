@@ -299,7 +299,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
     const heroTiles: CFOTileData[] = [
         {
             id: 'earnings-profitability',
-            insightId: 15,
+            insightId: 3,
             categoryLabel: 'Core earnings',
             headlineValue: earningsHeadline,
             headlineLabel: earningsLabel,
@@ -313,7 +313,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
         },
         {
             id: 'free-cash-flow',
-            insightId: 11,
+            insightId: 2,
             categoryLabel: 'Free cash flow',
             headlineValue: fcfHeadline,
             headlineLabel: 'Operating FCF (FY25)',
@@ -326,7 +326,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
         },
         {
             id: 'core-op-margin',
-            insightId: 12,
+            insightId: 2,
             categoryLabel: 'Core OP Margin',
             headlineValue: formatKpiHeadline(coreMargin, '26.0%'),
             headlineLabel: 'Core Operating Margin (FY25)',
@@ -339,7 +339,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
         },
         {
             id: 'xtandi-franchise',
-            insightId: 10,
+            insightId: 1,
             categoryLabel: 'XTANDI franchise',
             headlineValue: formatKpiHeadline(xtandi, '¥960.8B'),
             headlineLabel: 'XTANDI Net Sales (FY25 actual)',
@@ -352,7 +352,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
         },
         {
             id: 'revenue-capacity',
-            insightId: 3,
+            insightId: 13,
             categoryLabel: 'Total revenue',
             headlineValue: formatKpiHeadline(revenue, '¥2,139B'),
             headlineLabel: 'Revenue (FY25 actual)',
@@ -365,7 +365,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
         },
         {
             id: 'capital-allocation',
-            insightId: 8,
+            insightId: 3,
             categoryLabel: 'Dividend & capital return',
             headlineValue: formatKpiHeadline(dividend, '¥78'),
             headlineLabel: 'Annual dividend (FY25)',
@@ -382,7 +382,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
     const strategicTiles: CFOTileData[] = [
         {
             id: 'padcev-launch',
-            insightId: 4,
+            insightId: 5,
             categoryLabel: 'PADCEV — Oncology ADC',
             headlineValue: formatKpiHeadline(padcev, '¥221.2B'),
             headlineLabel: 'PADCEV Net Sales (FY25 actual)',
@@ -396,7 +396,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
         },
         {
             id: 'veozah-launch',
-            insightId: 5,
+            insightId: 9,
             categoryLabel: "VEOZAH — Women's Health",
             headlineValue: formatKpiHeadline(veozah, '¥46.6B'),
             headlineLabel: "VEOZAH Net Sales (FY25 actual)",
@@ -410,7 +410,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
         },
         {
             id: 'smt-savings',
-            insightId: 8,
+            insightId: 4,
             categoryLabel: 'SMT Transformation',
             headlineValue: formatKpiHeadline(smt, '¥21B'),
             headlineLabel: 'SMT Savings Realized (FY25)',
@@ -424,7 +424,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
         },
         {
             id: 'vyloy-pipeline',
-            insightId: 10,
+            insightId: 11,
             categoryLabel: 'VYLOY — Gastric Cancer',
             headlineValue: formatKpiHeadline(vyloy, '¥63.1B'),
             headlineLabel: 'VYLOY Net Sales (FY25 actual)',
@@ -442,7 +442,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
     const riskTiles: CFOTileData[] = [
         {
             id: 'xtandi-ira-risk',
-            insightId: 1,
+            insightId: 7,
             categoryLabel: 'XTANDI IRA Price Risk',
             headlineValue: '–¥9.6B/pp',
             headlineLabel: 'Core OP Impact per 1pp IRA Price Cut',
@@ -456,7 +456,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
         },
         {
             id: 'fx-adverse-risk',
-            insightId: 6,
+            insightId: 8,
             categoryLabel: 'FX Sensitivity (Yen)',
             headlineValue: '¥2.1B/¥1',
             headlineLabel: 'Core OP Sensitivity per ¥1 USD/JPY Move',
@@ -470,7 +470,7 @@ export function buildHomeTiles(kpis: KPIConfig, fin: FinancialConfig) {
         },
         {
             id: 'japan-nhi-risk',
-            insightId: 7,
+            insightId: 6,
             categoryLabel: 'Japan NHI Pricing',
             headlineValue: '¥289B',
             headlineLabel: 'Japan Segment Revenue (FY25)',

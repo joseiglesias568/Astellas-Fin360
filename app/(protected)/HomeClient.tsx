@@ -29,6 +29,7 @@ export default function HomeClient({ kpiConfig, financials }: HomeClientProps) {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedInsight, setSelectedInsight] = useState<PersonalizedInsight | null>(null);
+    const [selectedTile, setSelectedTile] = useState<CFOTileData | null>(null);
     const [searchFocused, setSearchFocused] = useState(false);
 
     // Build the 3 tile sections from database data
@@ -44,10 +45,11 @@ export default function HomeClient({ kpiConfig, financials }: HomeClientProps) {
         const insight = personalizedInsights.find(i => i.id === tile.insightId);
         if (insight) {
             setSelectedInsight(insight);
+            setSelectedTile(tile);
         }
     };
 
-    const handleCloseModal = () => setSelectedInsight(null);
+    const handleCloseModal = () => { setSelectedInsight(null); setSelectedTile(null); };
 
     const handleViewConsole = () => {
         if (selectedInsight?.consoleLink) {
@@ -157,6 +159,7 @@ export default function HomeClient({ kpiConfig, financials }: HomeClientProps) {
             {selectedInsight && (
                 <InsightDetailModal
                     insight={selectedInsight}
+                    tile={selectedTile ?? undefined}
                     onClose={handleCloseModal}
                     onViewConsole={handleViewConsole}
                     insightCharts={insightCharts.charts}
