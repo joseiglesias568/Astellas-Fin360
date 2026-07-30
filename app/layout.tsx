@@ -71,10 +71,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/logo-astellas.svg', type: 'image/svg+xml' },
+      { url: '/Picture1logo.png', type: 'image/png' },
     ],
     apple: [
-      { url: '/logo-astellas.svg' }
+      { url: '/Picture1logo.png' }
     ],
   },
   manifest: '/site.webmanifest',
