@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Brain, Target, Zap, BarChart3 } from 'lucide-react';
 
-import { getAnnualRollup } from '@/lib/epm/pl-forecast-data';
+import { getAnnualRollup, getPLForecastDataMonthly } from '@/lib/epm/pl-forecast-data';
 import type { PLLineItem, PLForecastData } from '@/lib/epm/pl-forecast-data';
 import { BOLD_LINES, INDENT_LINES } from '@/lib/epm/pl-forecast-data';
 import SummaryMetricCard from '@/components/epm/SummaryMetricCard';
@@ -17,7 +17,7 @@ interface MLForecastingClientProps {
 
 export default function MLForecastingClient({ data }: MLForecastingClientProps) {
   const [selectedLine, setSelectedLine] = useState<PLLineItem | null>(null);
-  const [viewMode, setViewMode] = useState<'quarterly' | 'annual'>('quarterly');
+  const [viewMode, setViewMode] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
 
   // Computed metrics for summary cards
   const fy26Rollup = useMemo(() => getAnnualRollup(data, 'FY26'), [data]);
@@ -29,12 +29,14 @@ export default function MLForecastingClient({ data }: MLForecastingClientProps) 
     return Math.round(allConf.reduce((s, c) => s + c, 0) / allConf.length);
   }, [data]);
 
+  const monthlyData = useMemo(() => getPLForecastDataMonthly(), []);
+
   const revGrowth = fy25Rollup.Revenue > 0
     ? ((fy26Rollup.Revenue - fy25Rollup.Revenue) / fy25Rollup.Revenue * 100).toFixed(1)
     : '0';
 
   const fy26Margin = fy26Rollup.Revenue > 0
-    ? (fy26Rollup['Operating Income'] / fy26Rollup.Revenue * 100).toFixed(1)
+    ? (fy26Rollup['Core Operating Profit'] / fy26Rollup.Revenue * 100).toFixed(1)
     : '0';
 
   // Best model accuracy
@@ -43,9 +45,10 @@ export default function MLForecastingClient({ data }: MLForecastingClientProps) 
     return sorted[0];
   }, [data]);
 
-  const selectedRow = selectedLine ? data.rows.find(r => r.lineItem === selectedLine) : null;
+  const activeData = viewMode === 'monthly' ? monthlyData : data;
+  const selectedRow = selectedLine ? activeData.rows.find(r => r.lineItem === selectedLine) : null;
   const selectedDrivers = selectedLine
-    ? data.drivers.filter(d => d.parentLine === selectedLine)
+    ? activeData.drivers.filter(d => d.parentLine === selectedLine)
     : [];
 
   return (
@@ -59,11 +62,20 @@ export default function MLForecastingClient({ data }: MLForecastingClientProps) 
         <div>
           <h1 className="text-xl font-bold text-gray-900">18-Month Rolling Forecast</h1>
           <p className="text-xs text-gray-500 mt-0.5">
-            Full P&L cascade with ML-predicted drivers &bull; Q1 FY25 through Q4 FY27
+            Full P&L cascade with ML-predicted drivers &bull;{' '}
+            {viewMode === 'monthly' ? "Apr '25 – Sep '26 (18 months)" : viewMode === 'quarterly' ? 'Q1 FY25 – Q4 FY27' : 'FY25 – FY27 Annual'}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex bg-gray-100 rounded-lg p-0.5">
+            <button
+              onClick={() => setViewMode('monthly')}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                viewMode === 'monthly' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'
+              }`}
+            >
+              Monthly
+            </button>
             <button
               onClick={() => setViewMode('quarterly')}
               className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
@@ -98,7 +110,7 @@ export default function MLForecastingClient({ data }: MLForecastingClientProps) 
         <SummaryMetricCard
           label="Operating Margin Trajectory"
           value={`${fy26Margin}%`}
-          subtitle={`FY25: ${(fy25Rollup['Operating Income'] / fy25Rollup.Revenue * 100).toFixed(1)}% → FY26: ${fy26Margin}%`}
+          subtitle={`FY25: ${(fy25Rollup['Core Operating Profit'] / fy25Rollup.Revenue * 100).toFixed(1)}% → FY26: ${fy26Margin}%`}
           icon={Target}
           trend="up"
           trendLabel="Expanding"
@@ -136,7 +148,14 @@ export default function MLForecastingClient({ data }: MLForecastingClientProps) 
           <span className="text-[10px] text-gray-400 ml-1">Click any line item to expand driver detail</span>
         </div>
 
-        {viewMode === 'quarterly' ? (
+        {viewMode === 'monthly' ? (
+          <PLTable
+            rows={monthlyData.rows}
+            periods={monthlyData.periods}
+            selectedLine={selectedLine}
+            onRowClick={(line) => setSelectedLine(selectedLine === line ? null : line)}
+          />
+        ) : viewMode === 'quarterly' ? (
           <PLTable
             rows={data.rows}
             periods={data.periods}
@@ -153,7 +172,7 @@ export default function MLForecastingClient({ data }: MLForecastingClientProps) 
             <DriverDetailPanel
               lineItem={selectedLine}
               row={selectedRow}
-              periods={data.periods}
+              periods={activeData.periods}
               drivers={selectedDrivers}
             />
           )}
@@ -221,7 +240,7 @@ export default function MLForecastingClient({ data }: MLForecastingClientProps) 
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-amber-300" />
-          <span>Current Quarter</span>
+          <span>{viewMode === 'monthly' ? 'Current Month' : 'Current Quarter'}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-emerald-400" />

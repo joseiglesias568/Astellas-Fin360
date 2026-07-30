@@ -390,6 +390,199 @@ export function getPLForecastData(): PLForecastData {
   return _cached;
 }
 
+// =============================================================================
+// MONTHLY DATA — 18-month window: Apr '25 – Sep '26
+// Quarterly values distributed into months using pharma back-weighted pattern:
+// Month 1 = 31.5%, Month 2 = 32.5%, Month 3 = 36% of quarterly total
+// =============================================================================
+
+function qToM(q: number[], nQuarters = 6): number[] {
+  const r: number[] = [];
+  for (let i = 0; i < nQuarters; i++) {
+    r.push(
+      parseFloat((q[i] * 0.315).toFixed(1)),
+      parseFloat((q[i] * 0.325).toFixed(1)),
+      parseFloat((q[i] * 0.360).toFixed(1)),
+    );
+  }
+  return r;
+}
+
+export function generateMonthlyPeriods(): PLPeriod[] {
+  const FY25 = [
+    { label: "Apr '25", q: 1 }, { label: "May '25", q: 1 }, { label: "Jun '25", q: 1 },
+    { label: "Jul '25", q: 2 }, { label: "Aug '25", q: 2 }, { label: "Sep '25", q: 2 },
+    { label: "Oct '25", q: 3 }, { label: "Nov '25", q: 3 }, { label: "Dec '25", q: 3 },
+    { label: "Jan '26", q: 4 }, { label: "Feb '26", q: 4 }, { label: "Mar '26", q: 4 },
+  ] as const;
+  const FY26 = [
+    { label: "Apr '26", q: 1 }, { label: "May '26", q: 1 }, { label: "Jun '26", q: 1 },
+    { label: "Jul '26", q: 2 }, { label: "Aug '26", q: 2 }, { label: "Sep '26", q: 2 },
+  ] as const;
+  return [
+    ...FY25.map(m => ({
+      label: m.label, fiscalYear: 'FY25', quarter: m.q,
+      isHistorical: true, isCurrent: false, isForecast: false,
+    })),
+    ...FY26.map((m, i) => ({
+      label: m.label, fiscalYear: 'FY26', quarter: m.q,
+      isHistorical: false, isCurrent: i === 0, isForecast: i > 0,
+    })),
+  ];
+}
+
+function generatePLRowsMonthly(periods: PLPeriod[]): PLForecastRow[] {
+  const MONTHLY_REV    = qToM(QUARTERLY_REVENUE);
+  const MONTHLY_COP    = qToM(QUARTERLY_CORE_OP);
+  const MONTHLY_RD     = qToM(RD_BASE);
+  const MONTHLY_SGA    = qToM(SGA_BASE);
+  const MONTHLY_SHARES = (() => {
+    const r: number[] = [];
+    for (let i = 0; i < 6; i++) r.push(SHARES_OUTSTANDING[i], SHARES_OUTSTANDING[i], SHARES_OUTSTANDING[i]);
+    return r;
+  })();
+
+  const currentIdx = periods.findIndex(p => p.isCurrent);
+  const makeRow = (lineItem: PLLineItem): PLForecastRow => ({
+    lineItem, values: {}, confidence: {}, lowerBound: {}, upperBound: {},
+  });
+
+  const revenue     = makeRow('Revenue');
+  const cogs        = makeRow('Cost of Sales');
+  const grossProfit = makeRow('Gross Profit');
+  const rd          = makeRow('R&D Expense');
+  const sga         = makeRow('SG&A Expense');
+  const totalOpex   = makeRow('Total Operating Expenses');
+  const coreOp      = makeRow('Core Operating Profit');
+  const coreNI      = makeRow('Core Net Income');
+  const coreEps     = makeRow('Core EPS');
+
+  periods.forEach((p, i) => {
+    const k = p.label;
+    const forecastDist = p.isForecast ? Math.min(i - currentIdx, 7) : 0;
+    const conf      = p.isHistorical ? 100 : p.isCurrent ? 97 : Math.max(60, 95 - forecastDist * 5);
+    const bandWidth = p.isHistorical ? 0   : p.isCurrent ? 0.003 : 0.015 + forecastDist * 0.008;
+
+    const rev = MONTHLY_REV[i];
+    revenue.values[k] = rev;
+    revenue.confidence[k] = conf;
+    revenue.lowerBound[k] = parseFloat((rev * (1 - bandWidth)).toFixed(1));
+    revenue.upperBound[k] = parseFloat((rev * (1 + bandWidth)).toFixed(1));
+
+    const coOp = MONTHLY_COP[i];
+    coreOp.values[k] = coOp;
+    coreOp.confidence[k] = Math.max(conf - 5, 55);
+    coreOp.lowerBound[k] = parseFloat((coOp * (1 - bandWidth * 2.0)).toFixed(1));
+    coreOp.upperBound[k] = parseFloat((coOp * (1 + bandWidth * 1.4)).toFixed(1));
+
+    const rdVal = MONTHLY_RD[i];
+    rd.values[k] = rdVal;
+    rd.confidence[k] = Math.max(conf - 3, 62);
+    rd.lowerBound[k] = parseFloat((rdVal * (1 - bandWidth * 0.8)).toFixed(1));
+    rd.upperBound[k] = parseFloat((rdVal * (1 + bandWidth * 0.8)).toFixed(1));
+
+    const sgaVal = MONTHLY_SGA[i];
+    sga.values[k] = sgaVal;
+    sga.confidence[k] = Math.max(conf - 2, 64);
+    sga.lowerBound[k] = parseFloat((sgaVal * (1 - bandWidth * 0.6)).toFixed(1));
+    sga.upperBound[k] = parseFloat((sgaVal * (1 + bandWidth * 0.6)).toFixed(1));
+
+    const gpVal = coOp + rdVal + sgaVal;
+    grossProfit.values[k] = parseFloat(gpVal.toFixed(1));
+    grossProfit.confidence[k] = conf;
+    grossProfit.lowerBound[k] = parseFloat((coreOp.lowerBound[k] + rd.lowerBound[k] + sga.lowerBound[k]).toFixed(1));
+    grossProfit.upperBound[k] = parseFloat((coreOp.upperBound[k] + rd.upperBound[k] + sga.upperBound[k]).toFixed(1));
+
+    const cogsVal = parseFloat((rev - gpVal).toFixed(1));
+    cogs.values[k] = cogsVal;
+    cogs.confidence[k] = Math.max(conf - 4, 58);
+    cogs.lowerBound[k] = parseFloat((revenue.lowerBound[k] - grossProfit.upperBound[k]).toFixed(1));
+    cogs.upperBound[k] = parseFloat((revenue.upperBound[k] - grossProfit.lowerBound[k]).toFixed(1));
+
+    const opexVal = parseFloat((rdVal + sgaVal + cogsVal).toFixed(1));
+    totalOpex.values[k] = opexVal;
+    totalOpex.confidence[k] = conf;
+    totalOpex.lowerBound[k] = parseFloat((rd.lowerBound[k] + sga.lowerBound[k] + cogs.lowerBound[k]).toFixed(1));
+    totalOpex.upperBound[k] = parseFloat((rd.upperBound[k] + sga.upperBound[k] + cogs.upperBound[k]).toFixed(1));
+
+    const cni = parseFloat((coOp * (1 - EFFECTIVE_TAX_RATE)).toFixed(1));
+    coreNI.values[k] = cni;
+    coreNI.confidence[k] = Math.max(conf - 5, 53);
+    coreNI.lowerBound[k] = parseFloat((coreOp.lowerBound[k] * (1 - EFFECTIVE_TAX_RATE)).toFixed(1));
+    coreNI.upperBound[k] = parseFloat((coreOp.upperBound[k] * (1 - EFFECTIVE_TAX_RATE)).toFixed(1));
+
+    const shares = MONTHLY_SHARES[i] ?? 4400;
+    const epsVal = parseFloat(((cni * 1000) / shares).toFixed(1));
+    coreEps.values[k] = epsVal;
+    coreEps.confidence[k] = coreNI.confidence[k];
+    coreEps.lowerBound[k] = parseFloat(((coreNI.lowerBound[k] * 1000) / shares).toFixed(1));
+    coreEps.upperBound[k] = parseFloat(((coreNI.upperBound[k] * 1000) / shares).toFixed(1));
+  });
+
+  return [revenue, cogs, grossProfit, rd, sga, totalOpex, coreOp, coreNI, coreEps];
+}
+
+function generateDriversMonthly(periods: PLPeriod[]): DriverForecastRow[] {
+  const drivers: DriverForecastRow[] = [];
+
+  const revDriverDefs = [
+    { name: 'XTANDI Revenue (Prostate Cancer Franchise)', base: [238.0, 241.5, 240.0, 241.3, 246.0, 238.5] },
+    { name: 'PADCEV Revenue (Bladder Cancer Franchise)',  base: [52.0,  54.5,  56.3,  58.4,  65.0,  66.5]  },
+    { name: "VEOZAH Revenue (Women's Health)",            base: [1.5,   2.0,   2.5,   3.0,   3.5,   4.0]   },
+    { name: 'IZERVAY Revenue (Retinal Disease)',          base: [2.5,   2.8,   3.2,   3.5,   4.5,   5.2]   },
+    { name: 'VYLOY Revenue (Gastric Cancer)',             base: [2.0,   2.5,   3.0,   4.0,   3.5,   3.8]   },
+    { name: 'Japan Segment Revenue',                      base: [146.0, 140.5, 143.5, 152.0, 147.5, 143.0] },
+    { name: 'FX Impact on Revenue (¥/USD)',               base: [8.0,  -4.0,  -6.5, -10.0, -12.0,  -8.5]  },
+  ];
+  for (const def of revDriverDefs) {
+    const monthly = qToM(def.base);
+    const d: DriverForecastRow = { driverName: def.name, parentLine: 'Revenue', unit: '¥B', values: {}, impactOnParent: {} };
+    periods.forEach((p, i) => { d.values[p.label] = monthly[i]; d.impactOnParent[p.label] = monthly[i] - (monthly[i - 1] || monthly[0]); });
+    drivers.push(d);
+  }
+
+  const cogsDriverDefs = [
+    { name: 'Manufacturing COGS (Biologics & Small Molecule)', base: [76.0, 73.5, 75.5, 74.0, 78.5, 76.0] },
+    { name: 'Product Mix Shift (Higher-Cost Biologics Weight)', base: [28.5, 29.0, 30.0, 31.0, 33.0, 34.0] },
+    { name: 'Supply Chain & Distribution Cost',                  base: [14.5, 13.8, 14.2, 14.5, 14.8, 14.3] },
+  ];
+  for (const def of cogsDriverDefs) {
+    const monthly = qToM(def.base);
+    const d: DriverForecastRow = { driverName: def.name, parentLine: 'Cost of Sales', unit: '¥B', values: {}, impactOnParent: {} };
+    periods.forEach((p, i) => { d.values[p.label] = monthly[i]; d.impactOnParent[p.label] = monthly[i] - (monthly[i - 1] || monthly[0]); });
+    drivers.push(d);
+  }
+
+  const opexDriverDefs = [
+    { name: 'R&D Investment (Pipeline & Phase Programs)', base: [109.5, 111.2, 115.0, 108.3, 113.0, 114.5] },
+    { name: 'SG&A Net of SMT Savings',                    base: [118.5, 116.0, 117.2, 115.3, 114.0, 112.5] },
+    { name: 'Medical Affairs & Market Access Spend',       base: [18.5,  17.8,  18.2,  17.5,  18.0,  17.5]  },
+    { name: 'SMT Transformation Program Savings',          base: [-5.0, -5.2,  -5.3,  -5.5,  -9.5, -10.0]  },
+  ];
+  for (const def of opexDriverDefs) {
+    const monthly = qToM(def.base);
+    const d: DriverForecastRow = { driverName: def.name, parentLine: 'Total Operating Expenses', unit: '¥B', values: {}, impactOnParent: {} };
+    periods.forEach((p, i) => { d.values[p.label] = monthly[i]; d.impactOnParent[p.label] = monthly[i] - (monthly[i - 1] || monthly[0]); });
+    drivers.push(d);
+  }
+
+  return drivers;
+}
+
+let _cachedMonthly: PLForecastData | null = null;
+
+export function getPLForecastDataMonthly(): PLForecastData {
+  if (_cachedMonthly) return _cachedMonthly;
+  const periods = generateMonthlyPeriods();
+  _cachedMonthly = {
+    periods,
+    rows: generatePLRowsMonthly(periods),
+    drivers: generateDriversMonthly(periods),
+    modelAccuracy: generateModelAccuracy(),
+  };
+  return _cachedMonthly;
+}
+
 export function getAnnualRollup(data: PLForecastData, fiscalYear: string): Record<PLLineItem, number> {
   const result = {} as Record<PLLineItem, number>;
   const fyPeriods = data.periods.filter(p => p.fiscalYear === fiscalYear).map(p => p.label);
