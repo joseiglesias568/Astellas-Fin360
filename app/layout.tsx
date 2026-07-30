@@ -71,19 +71,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/logo-icon.svg', sizes: '32x32', type: 'image/svg+xml' }
+      { url: '/download.png', type: 'image/png' },
     ],
     apple: [
-      { url: '/logo-icon.svg' }
+      { url: '/download.png' }
     ],
-    other: [
-      {
-        rel: 'mask-icon',
-        url: '/favicon.svg',
-        color: '#D91E49',
-      }
-    ]
   },
   manifest: '/site.webmanifest',
 }
