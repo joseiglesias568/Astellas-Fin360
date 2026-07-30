@@ -11,7 +11,7 @@ export const branding: BrandingConfig = {
   subtitle: 'Real-time analytics and reporting for Astellas Pharma Inc.',
   logoPath: '/logo.svg',
   logoAlt: 'Astellas Pharma — Finance360',
-  copyrightHolder: 'Astellas Pharma Inc.',
+  copyrightHolder: 'Astellas Pharma Inc',
   copyrightYear: 2026,
   poweredBy: 'Accenture',
   designedBy: 'Accenture',
