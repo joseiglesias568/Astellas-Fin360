@@ -49,11 +49,11 @@ export default function LoginPage() {
                 <div className="text-center space-y-3">
                     <div className="flex justify-center">
                         <Image
-                            src="/download.png"
+                            src="/Picture1logo.png"
                             alt={branding.logoAlt}
                             width={245}
                             height={206}
-                            style={{ width: '110px', height: 'auto' }}
+                            style={{ width: '90px', height: 'auto' }}
                             priority
                         />
                     </div>
